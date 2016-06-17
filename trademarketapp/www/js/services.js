@@ -62,3 +62,65 @@ services.factory('pageNameService', function(){
   };
 
 });
+
+services.factory('quotesService', function($q, $http){
+  // Create a quotes service to simplify how to load data from Yahoo Finance
+  var QuotesService = {};
+
+  QuotesService.get = function(symbols) {
+    // Convert the symbols array into the format required for YQL
+    symbols = symbols.map(function(symbol) {
+      return "'" + symbol.toUpperCase() + "'";
+    });
+    // Create a new deferred object
+    var defer = $q.defer();
+    // Make the http request
+    $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in (' + symbols.join(',') + ')&format=json&env=http://datatables.org/alltables.env').success(function(quotes) {
+      // The API is funny, if only one result is returned it is an object, multiple results are an array. This forces it to be an array for consistency
+      if (quotes.query.count === 1) {
+        quotes.query.results.quote = [quotes.query.results.quote];
+      }
+      // Resolve the promise with the data
+      defer.resolve(quotes.query.results.quote);
+    }).error(function(error) {
+      // If an error occurs, reject the promise with the error
+      defer.reject(error);
+    });
+    // Return the promise
+    return defer.promise;
+  };
+
+  return QuotesService;
+});
+
+services.factory('localStorageService', function() {
+
+  // Helper methods to manage an array of data through localstorage
+  return {
+    // This pulls out an item from localstorage and tries to parse it as JSON strings
+    get: function LocalStorageServiceGet(key, defaultValue) {
+      var stored = localStorage.getItem(key);
+      try {
+        stored = angular.fromJson(stored);
+      } catch(error) {
+        stored = null;
+      }
+      if (defaultValue && stored === null) {
+        stored = defaultValue;
+      }
+      return stored;
+    },
+    // This stores data into localstorage, but converts values to a JSON string first
+    update: function LocalStorageServiceUpdate(key, value) {
+      if (value) {
+        localStorage.setItem(key, angular.toJson(value));
+      }
+    },
+    // This will remove a key from localstorage
+    clear: function LocalStorageServiceClear(key) {
+      localStorage.removeItem(key);
+    }
+  };
+
+});
+

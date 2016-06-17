@@ -1,7 +1,17 @@
+
+
 <ion-view view-title="Real Time Data">
   <ion-header-bar class="bar-stable">
     <h1 class="title">Real Time Data</h1>
   </ion-header-bar>
+  <!-- Add buttons to both primary and secondary sides of the navbar -->
+  <ion-nav-buttons side="primary">
+    <button class="button button-clear" ng-click="openModal()"><i class="icon ion-ios-plus-empty"></i></button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="secondary">
+    <button class="button button-clear" ng-click="state.remove = !state.remove">Edit</button>
+  </ion-nav-buttons>
+
   <div class="bar bar-subheader">
     <h2 class="title">
       <div class="row">
@@ -13,47 +23,27 @@
   </div>
 
   <ion-content class="ionic-scroll has-header has-subheader has-tabs" ng-controller="RealTimeDataCtrl">
-        <div class="row"><div class="col col-center"></div></div>
-        <div class="list">
-          <li class="item" >
-            <div class="row">
-              <div class="col col-50">TOCOM Kerose</div>
-              <div class="col col-35">43780.00</div>
-              <div class="col col-25">-440</div>
-            </div>
-
-          </li>
-          <li class="item">
-            <div class="row">
-              <div class="col col-50">NYMEX WTI Crude</div>
-              <div class="col col-35">47.81</div>
-              <div class="col col-25">-0.68</div>
-            </div>
-          </li>
-          <li class="item">
-            <div class="row">
-              <div class="col col-50">ICE Brent Crude</div>
-              <div class="col col-35">49.20</div>
-              <div class="col col-25">-0.63</div>
-            </div>
-
-          </li>
-          <li class="item">
-            <div class="row">
-              <div class="col col-50">TOCOM Crude</div>
-              <div class="col col-35">30810.00</div>
-              <div class="col col-25">-450.00</div>
-            </div>
-          </li>
-          <li class="item">
-            <div class="row">
-              <div class="col col-50">NYMEX Natural Gas</div>
-              <div class="col col-35">2.60</div>
-              <div class="col col-25">-0.001</div>
-            </div>
-          </li>
+        <div class="row">
+          <div class="col col-center"></div>
         </div>
-      </div>
+
+        <!-- ionRefresher activates when the user pulls down and calls getQuotes() -->
+        <ion-refresher on-refresh="getQuotes()"></ion-refresher>
+        <!-- ionList allows us to make a complex list with swipe buttons, reordering, and more -->
+          <ion-list show-reorder="state.reorder">
+            <!-- Repeat over each quote, to display the current details and name -->
+            <ion-item ng-repeat="stock in quotes">
+
+                <div style="display:inline-block;width:38%" class="col-offset-10">{{stock.symbol}}</div>
+                <div style="display:inline-block;width:33%">{{stock.LastTradePriceOnly | currency:'$'}}</div>
+                <div style="display:inline-block;width:33%" >{{stock.Change}}</div>
+
+              <!-- Option and reorder button for list items -->
+              <ion-option-button class="button-assertive" ng-click="remove($index)">Remove</ion-option-button>
+              <ion-reorder-button class="ion-navicon" on-reorder="reorder(stock, $fromIndex, $toIndex)">
+            </ion-item>
+          </ion-list>
+
 
   </ion-content>
 </ion-view>
