@@ -49,6 +49,25 @@ services.factory('Chats', function() {
   };
 });
 
+services.factory('crossPageService', function($rootScope){
+  this.reorder = 'false';
+
+  this.getReorder = function(){
+    return this.reorder;
+  };
+
+  this.setReorder = function(reorder){
+    this.reorder = reorder;
+  };
+
+  this.prepForBroadcast = function(reorder){
+    this.setReorder(reorder);
+    $rootScope.$broadcast('handleBroadcast');
+  };
+
+  return this;
+});
+
 services.factory('pageNameService', function(){
   this.pageName = 'login';
   return {
@@ -65,9 +84,9 @@ services.factory('pageNameService', function(){
 
 services.factory('quotesService', function($q, $http){
   // Create a quotes service to simplify how to load data from Yahoo Finance
-  var QuotesService = {};
+  var quotesService = {};
 
-  QuotesService.get = function(symbols) {
+  quotesService.get = function(symbols) {
     // Convert the symbols array into the format required for YQL
     symbols = symbols.map(function(symbol) {
       return "'" + symbol.toUpperCase() + "'";
@@ -75,7 +94,11 @@ services.factory('quotesService', function($q, $http){
     // Create a new deferred object
     var defer = $q.defer();
     // Make the http request
-    $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in (' + symbols.join(',') + ')&format=json&env=http://datatables.org/alltables.env').success(function(quotes) {
+    $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in (' + symbols.join(',') + ')&format=json&env=http://datatables.org/alltables.env')
+      .success(function(quotes) {
+
+      //  $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid=2502265&format=json&env=http://datatables.org/alltables.env')
+      //    .success(function(quotes) {
       // The API is funny, if only one result is returned it is an object, multiple results are an array. This forces it to be an array for consistency
       if (quotes.query.count === 1) {
         quotes.query.results.quote = [quotes.query.results.quote];
@@ -90,7 +113,7 @@ services.factory('quotesService', function($q, $http){
     return defer.promise;
   };
 
-  return QuotesService;
+  return quotesService;
 });
 
 services.factory('localStorageService', function() {

@@ -69,7 +69,7 @@ angular.module('tradeapp.controllers', [])
     $log.log(pageNameService.getPageName());
   })
 
-  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicLoading, pageNameService, localStorageService, quotesService) {
+  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicLoading, pageNameService, crossPageService, localStorageService, quotesService) {
     pageNameService.setPageName("realtime");
     $log.log(pageNameService.getPageName());
 
@@ -81,6 +81,12 @@ angular.module('tradeapp.controllers', [])
     $scope.state = {
       reorder: false
     };
+
+    $scope.$on('handleBroadcast',function(){
+      $scope.state.reorder = crossPageService.getReorder();
+      updateSymbols();
+    });
+
     // Function to update the symbols in localstorage
     function updateSymbols() {
       var symbols = [];
@@ -149,10 +155,21 @@ angular.module('tradeapp.controllers', [])
 
   })
 
-  .controller('MainCtrl', function ($scope, $location, $log, pageNameService) {
+  .controller('MainCtrl', function ($scope, $location, $log, crossPageService, pageNameService) {
     pageNameService.setPageName("index");
     $scope.pageName = pageNameService.getPageName();
     $log.log(pageNameService.getPageName());
+
+
+    $scope.changeReorderState = function(){
+      if(crossPageService.getReorder() == true){
+        crossPageService.setReorder(false);
+      }else{
+        crossPageService.setReorder(true);
+      }
+      crossPageService.prepForBroadcast(crossPageService.getReorder());
+
+    };
   })
 
 
