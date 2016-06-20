@@ -49,6 +49,58 @@ services.factory('Chats', function() {
   };
 });
 
+services.factory('signUpService',function($q, $http){
+
+  var signUpService = {};
+  // Create a new deferred object
+  var defer = $q.defer();
+  signUpService.save = function(bodyData){
+    myobject = { email: bodyData.email,
+      password:bodyData.password,
+      username:bodyData.username};
+    Object.toparams = function ObjecttoParams(obj)
+    {
+      var p = [];
+      for (var key in obj)
+      {
+        p.push(key + '=' + encodeURIComponent(obj[key]));
+      }
+      return p.join('&');
+    };
+
+    var req =
+    {
+      method: 'GET',
+      url: "http://localhost:8080/signup",
+      data: Object.toparams(myobject),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }
+
+    $http(req).
+    success(function(data, status, headers, config)
+    {
+      //success
+      defer.resolve(data);
+    }).
+    error(function(error)
+    {
+      //error
+      defer.reject(error);
+    });
+    // Return the promise
+    return defer.promise;
+  };
+
+  // return{
+  //   save: function(form){
+  //     return $http.post('http://localhost:8080/signup',form,{
+  //       method:'Post'
+  //     });
+  //   }
+  // }
+  return signUpService;
+});
+
 services.factory('crossPageService', function($rootScope){
   this.reorder = 'false';
 
@@ -81,6 +133,20 @@ services.factory('pageNameService', function(){
   };
 
 });
+
+// services.factory('socketService', function($rootScope){
+//   var socket = io.connect('http://localhost:8080');
+//   var username = 'xxhu';
+//   var password = '121212';
+
+  // var socketService = {};
+  // socketService.get = function(){
+  //   socket.emit('some event', '{"action":"login","username":"xxhu","password":"121212"}@@');
+  //       console.log("User is authenticated");
+  //   };
+
+// });
+
 
 services.factory('quotesService', function($q, $http){
   // Create a quotes service to simplify how to load data from Yahoo Finance

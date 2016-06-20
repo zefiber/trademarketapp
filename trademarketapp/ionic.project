@@ -1,4 +1,10 @@
 {
   "name": "trademarketapp",
-  "app_id": "c02118cd"
+  "app_id": "c02118cd",
+  "proxies": [
+    {
+      "path": "/signup",
+      "proxyUrl": "http://localhost:8080/signup"
+    }
+  ]
 }

@@ -50,15 +50,18 @@ angular.module('tradeapp.controllers', [])
 
   })
 
-  .controller('SignUpCtrl', function ($scope, $log, pageNameService) {
+  .controller('SignUpCtrl', function ($scope, $location, $log, pageNameService, signUpService) {
     $scope.pageName = "signup";
     $scope.createNewUser = function () {
       console.log("create new user");
-      console.log($scope.model.firstname);
-      console.log($scope.model.lastname);
-      console.log($scope.model.email);
-      console.log($scope.model.username);
-      console.log($scope.model.password);
+
+      signUpService.save($scope.model);
+      // console.log($scope.model.firstname);
+      // console.log($scope.model.lastname);
+      // console.log($scope.model.email);
+      // console.log($scope.model.username);
+      // console.log($scope.model.password);
+      $location.path('/login');
     };
     pageNameService.setPageName("signup");
     $log.log(pageNameService.getPageName());
@@ -80,6 +83,60 @@ angular.module('tradeapp.controllers', [])
     };
     $scope.state = {
       reorder: false
+    };
+
+
+    $scope.connectSocket = function () {
+      // var socket = io('http://127.0.0.1:8080');
+      // //socket.send('messageEvent', '{"action":"login","username":"xxhu","password":"121212"}@@');
+      //socket.emit('some event', '{"action":"subscribe","symbol":"uwti"}@@');
+      // socket.on('connect',function(){
+      //   socket.send('{"action":"subscribe","symbol":"uwti"}@@');
+      //   socket.on('messageEvent', function(data){
+      //     console.log(data);
+      //   });
+      // })
+      var ws = new WebSocket("ws://127.0.0.1:8080/");
+      $log.log(ws);
+      var count = 0;
+      while(true){
+        count++;
+        if(count > 3){
+          break;
+        }
+        setTimeout(function(){
+          $log.log("try again");
+        },2000);
+        if(ws.readyState === 1){
+          $log.log("success");
+          ws.send("sdfwew");
+          break;
+        }
+      }
+    if(ws.readyState === 0) {
+      $log.log("INVALID_STATE_ERR: Web Socket connection has not been established");
+    }
+
+      //connection.send("{\"action\":\"login\",\"username\":\"xxhu\",\"password\":\"121212\"}@@\"");
+      ws.onmessage = function(message){
+          $log.log(message);
+      };
+
+      ws.onopen = function (event) {
+        ws.send('{"action":"login","username":"xxhu","password":"121212"}@@');
+        $log.log("send a message");
+        setTimeout(function(){
+          ws.send('{"action":"subscribe","symbol":"uwti"}@@');
+        },5000);
+        ws.onmessage = function(event){
+          $log.log("received a message",event);
+        }
+
+        ws.onclose = function(event){
+          $log.log("client close");
+        }
+        ws.close();
+      };
     };
 
     $scope.$on('handleBroadcast',function(){
@@ -104,6 +161,7 @@ angular.module('tradeapp.controllers', [])
     };
     // Method to load quotes, or show an alert on error, and finally close the loader
     $scope.getQuotes = function() {
+
       quotesService.get($scope.symbols).then(function(quotes) {
         $scope.quotes = quotes;
       }, function(error) {
