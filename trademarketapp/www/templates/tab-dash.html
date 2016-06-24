@@ -15,9 +15,9 @@
   <div class="bar bar-subheader" >
     <h2 class="title">
       <div class="row">
-        <div class="col">Commodity</div>
-        <div class="col">Last</div>
-        <div class="col">Change</div>
+        <div class="col">Symbol</div>
+        <div class="col">Ask</div>
+        <div class="col">Bid</div>
       </div>
     </h2>
   </div>
@@ -41,8 +41,8 @@
             <ion-item ng-repeat="stock in quotes">
 
                 <div style="display:inline-block;width:33%" class="col-offset-10">{{stock.symbol}}</div>
-                <div style="display:inline-block;width:33%">{{stock.LastTradePriceOnly | currency:'$'}}</div>
-                <div style="display:inline-block;width:33%" >{{stock.Change}}</div>
+                <div style="display:inline-block;width:33%">{{stock.ask | currency:'$'}}</div>
+                <div style="display:inline-block;width:33%" >{{stock.bid | currency: '$'}}</div>
 
               <!-- Option and reorder button for list items -->
               <ion-option-button class="button-assertive" ng-click="remove($index)">Remove</ion-option-button>

@@ -1,6 +1,6 @@
 var services = angular.module('tradeapp.services', [])
 
-services.factory('Chats', function() {
+services.factory('Chats', function () {
   // Might use a resource here that returns a JSON array
 
   // Some fake testing data
@@ -32,13 +32,13 @@ services.factory('Chats', function() {
   }];
 
   return {
-    all: function() {
+    all: function () {
       return chats;
     },
-    remove: function(chat) {
+    remove: function (chat) {
       chats.splice(chats.indexOf(chat), 1);
     },
-    get: function(chatId) {
+    get: function (chatId) {
       for (var i = 0; i < chats.length; i++) {
         if (chats[i].id === parseInt(chatId)) {
           return chats[i];
@@ -49,46 +49,23 @@ services.factory('Chats', function() {
   };
 });
 
-services.factory('signUpService',function($q, $http){
+services.factory('signUpService', function ($q, $http) {
 
   var signUpService = {};
   // Create a new deferred object
   var defer = $q.defer();
-  signUpService.save = function(bodyData){
-    myobject = { email: bodyData.email,
-      password:bodyData.password,
-      username:bodyData.username};
-    Object.toparams = function ObjecttoParams(obj)
-    {
-      var p = [];
-      for (var key in obj)
-      {
-        p.push(key + '=' + encodeURIComponent(obj[key]));
-      }
-      return p.join('&');
+  signUpService.create = function (bodyData) {
+    var  myobject = {
+      email: bodyData.email,
+      password: bodyData.password,
+      username: bodyData.username
     };
 
-    var req =
-    {
-      method: 'GET',
-      url: "http://localhost:8080/signup",
-      data: Object.toparams(myobject),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }
+    var jsonObj = JSON.stringify(myobject);
+    var url = "http://localhost:8200/signup";
 
-    $http(req).
-    success(function(data, status, headers, config)
-    {
-      //success
-      defer.resolve(data);
-    }).
-    error(function(error)
-    {
-      //error
-      defer.reject(error);
-    });
-    // Return the promise
-    return defer.promise;
+    return $http.post(url, jsonObj);
+
   };
 
   // return{
@@ -101,18 +78,18 @@ services.factory('signUpService',function($q, $http){
   return signUpService;
 });
 
-services.factory('crossPageService', function($rootScope){
+services.factory('crossPageService', function ($rootScope) {
   this.reorder = 'false';
 
-  this.getReorder = function(){
+  this.getReorder = function () {
     return this.reorder;
   };
 
-  this.setReorder = function(reorder){
+  this.setReorder = function (reorder) {
     this.reorder = reorder;
   };
 
-  this.prepForBroadcast = function(reorder){
+  this.prepForBroadcast = function (reorder) {
     this.setReorder(reorder);
     $rootScope.$broadcast('handleBroadcast');
   };
@@ -120,13 +97,13 @@ services.factory('crossPageService', function($rootScope){
   return this;
 });
 
-services.factory('pageNameService', function(){
+services.factory('pageNameService', function () {
   this.pageName = 'login';
   return {
-    getPageName: function() {
+    getPageName: function () {
       return this.pageName;
     },
-    setPageName: function(pageName){
+    setPageName: function (pageName) {
       this.pageName = pageName;
     }
 
@@ -139,39 +116,39 @@ services.factory('pageNameService', function(){
 //   var username = 'xxhu';
 //   var password = '121212';
 
-  // var socketService = {};
-  // socketService.get = function(){
-  //   socket.emit('some event', '{"action":"login","username":"xxhu","password":"121212"}@@');
-  //       console.log("User is authenticated");
-  //   };
+// var socketService = {};
+// socketService.get = function(){
+//   socket.emit('some event', '{"action":"login","username":"xxhu","password":"121212"}@@');
+//       console.log("User is authenticated");
+//   };
 
 // });
 
 
-services.factory('quotesService', function($q, $http){
+services.factory('quotesService', function ($q, $http) {
   // Create a quotes service to simplify how to load data from Yahoo Finance
   var quotesService = {};
 
-  quotesService.get = function(symbols) {
+  quotesService.get = function (symbols) {
     // Convert the symbols array into the format required for YQL
-    symbols = symbols.map(function(symbol) {
+    symbols = symbols.map(function (symbol) {
       return "'" + symbol.toUpperCase() + "'";
     });
     // Create a new deferred object
     var defer = $q.defer();
     // Make the http request
     $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in (' + symbols.join(',') + ')&format=json&env=http://datatables.org/alltables.env')
-      .success(function(quotes) {
+      .success(function (quotes) {
 
-      //  $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid=2502265&format=json&env=http://datatables.org/alltables.env')
-      //    .success(function(quotes) {
-      // The API is funny, if only one result is returned it is an object, multiple results are an array. This forces it to be an array for consistency
-      if (quotes.query.count === 1) {
-        quotes.query.results.quote = [quotes.query.results.quote];
-      }
-      // Resolve the promise with the data
-      defer.resolve(quotes.query.results.quote);
-    }).error(function(error) {
+        //  $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid=2502265&format=json&env=http://datatables.org/alltables.env')
+        //    .success(function(quotes) {
+        // The API is funny, if only one result is returned it is an object, multiple results are an array. This forces it to be an array for consistency
+        if (quotes.query.count === 1) {
+          quotes.query.results.quote = [quotes.query.results.quote];
+        }
+        // Resolve the promise with the data
+        defer.resolve(quotes.query.results.quote);
+      }).error(function (error) {
       // If an error occurs, reject the promise with the error
       defer.reject(error);
     });
@@ -182,7 +159,7 @@ services.factory('quotesService', function($q, $http){
   return quotesService;
 });
 
-services.factory('localStorageService', function() {
+services.factory('localStorageService', function () {
 
   // Helper methods to manage an array of data through localstorage
   return {
@@ -191,7 +168,7 @@ services.factory('localStorageService', function() {
       var stored = localStorage.getItem(key);
       try {
         stored = angular.fromJson(stored);
-      } catch(error) {
+      } catch (error) {
         stored = null;
       }
       if (defaultValue && stored === null) {
@@ -212,4 +189,6 @@ services.factory('localStorageService', function() {
   };
 
 });
+
+
 
