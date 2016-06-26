@@ -1,4 +1,4 @@
-var services = angular.module('tradeapp.services', [])
+var services = angular.module('tradeapp.services', []);
 
 services.factory('Chats', function () {
   // Might use a resource here that returns a JSON array
@@ -49,19 +49,48 @@ services.factory('Chats', function () {
   };
 });
 
+services.factory('signInService', function ($q, $http) {
+
+  var signInService = {};
+  // Create a new deferred object
+
+  signInService.validateUser = function (bodyData) {
+    var defer = $q.defer();
+    var myobject = {
+      password: bodyData.password,
+      username: bodyData.username,
+    };
+
+    var jsonObj = angular.toJson(myobject);
+    var url = "http://localhost:8200/signin";
+
+    $http.post(url, jsonObj).success(function(data){
+      return defer.resolve(data);
+    }).error(function(error){
+      return defer.reject(error);
+    });
+    return defer.promise;
+
+  };
+
+  return signInService;
+});
+
 services.factory('signUpService', function ($q, $http) {
 
   var signUpService = {};
   // Create a new deferred object
   var defer = $q.defer();
   signUpService.create = function (bodyData) {
-    var  myobject = {
+    var myobject = {
       email: bodyData.email,
       password: bodyData.password,
-      username: bodyData.username
+      username: bodyData.username,
+      firstname: bodyData.firstname,
+      lastname: bodyData.lastname
     };
 
-    var jsonObj = JSON.stringify(myobject);
+    var jsonObj = JSON.toJSON(myobject);
     var url = "http://localhost:8200/signup";
 
     return $http.post(url, jsonObj);
@@ -111,18 +140,45 @@ services.factory('pageNameService', function () {
 
 });
 
-// services.factory('socketService', function($rootScope){
-//   var socket = io.connect('http://localhost:8080');
-//   var username = 'xxhu';
-//   var password = '121212';
+services.factory('socketService', function ($rootScope, $log, $q) {
+  this.socketConn = '';
+  this.getSocketConn = function () {
+    return this.socketConn;
+  }
+  this.setSocketConn = function (socketConn) {
+    this.socketConn = socketConn;
+  }
 
-// var socketService = {};
-// socketService.get = function(){
-//   socket.emit('some event', '{"action":"login","username":"xxhu","password":"121212"}@@');
-//       console.log("User is authenticated");
-//   };
+  this.loadRealTimeQuotes = function (msgArr) {
+    var d = $q.defer();
+    var ws = new WebSocket("ws://127.0.0.1:8181/");
+    this.setSocketConn(ws);
+    $log.log("Web Socket connection has been established successfully");
+    ws.onopen = function (event) {
+      //ws.send('{"action":"subscribe","symbol":"uwti"}');
+      for(var i in msgArr){
+        ws.send(msgArr[i]);
+      }
+    };
 
-// });
+    ws.onmessage = function (event) {
+      //[{"symbol": "uwti","ask": 66.92539153943089,"bid": 10.900888923043798,"bidsize": 347,"asksize": 354}]
+      $log.log("received a message", event.data);
+      var stockObjArr = JSON.parse(event.data);
+
+      d.notify(stockObjArr);
+      // d.resolve(stockObjArr);
+    };
+
+    ws.onclose = function (event) {
+      $log.log("connection closed");
+    };
+    return d.promise;
+  }
+
+  return this;
+
+});
 
 
 services.factory('quotesService', function ($q, $http) {
@@ -131,6 +187,7 @@ services.factory('quotesService', function ($q, $http) {
 
   quotesService.get = function (symbols) {
     // Convert the symbols array into the format required for YQL
+    symbols = ['YHOO'];
     symbols = symbols.map(function (symbol) {
       return "'" + symbol.toUpperCase() + "'";
     });
@@ -171,6 +228,7 @@ services.factory('localStorageService', function () {
       } catch (error) {
         stored = null;
       }
+      console.log(stored);
       if (defaultValue && stored === null) {
         stored = defaultValue;
       }
@@ -185,6 +243,17 @@ services.factory('localStorageService', function () {
     // This will remove a key from localstorage
     clear: function LocalStorageServiceClear(key) {
       localStorage.removeItem(key);
+    },
+    generateMsgArr: function LocalStorageServiceGenMsgArr(action, symbols) {
+      var retArr = [];
+      var msgObj = {};
+
+      for (var i in symbols) {
+        msgObj = {action:action, symbol:symbols[i]};
+        retArr.push(angular.toJson(msgObj));
+      }
+
+      return retArr;
     }
   };
 

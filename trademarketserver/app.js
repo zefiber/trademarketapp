@@ -27,20 +27,6 @@ app.listen(port,function(){
 
 
 app.post('/signup', function(req,res){
-	// var client = new Client();
-	// client.username = req.body.username;
-	// client.password = req.body.password;
-	// client.lastname = req.body.lastname;
-	// client.firstname = req.body.firstname;
-	// client.email = req.body.email;
-	// client.save(function(err,client){
-	// 	if(err){
-	// 		res.send('error saving client');
-	// 	}else{
-	// 		console.log(client);
-	// 		res.send(client);
-	// 	}
-	// })
 
 	console.log(req.body);
 	var reqBody = req.body;
@@ -49,6 +35,8 @@ app.post('/signup', function(req,res){
 	client.username = reqBody.username;
 	client.password = reqBody.password;
 	client.email = reqBody.email;
+	client.firstname = reqBody.firstname;
+	client.lastname = reqBody.lastname;
 	console.log(client);
 	client.save(function(err,client){
 		if(err){
@@ -59,6 +47,30 @@ app.post('/signup', function(req,res){
 		}
 	})
 });
+
+app.post('/signin', function(req,res){
+
+	console.log(req.body);
+	var reqBody = req.body;
+
+	Client.findOne({
+		password: reqBody.password,
+		username: reqBody.username
+	}).exec(function(err, client){
+		if(err){
+			res.send('login fail');
+		}else if(client === null){
+			res.send('user validation fail');
+		}
+		else{
+			console.log(reqBody.username + ' logged in');
+			res.send('login success');
+		}
+	})
+
+});
+
+
 
 app.post('/book2',function(req,res){
 	Book.create(req.body, function(err,book){

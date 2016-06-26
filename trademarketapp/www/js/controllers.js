@@ -30,7 +30,7 @@ angular.module('tradeapp.controllers', [])
   })
 
 
-  .controller('LoginCtrl', function ($scope, $location, $log, pageNameService) {
+  .controller('LoginCtrl', function ($scope, $location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, signInService) {
 
     $scope.login = function () {
       $scope.pageName = "login";
@@ -39,9 +39,40 @@ angular.module('tradeapp.controllers', [])
       console.log($scope.model.password);
 
       //connect to service to validate
-      if (true) {  //to do !
-        $location.path("/tab/dash");
-      }
+      signInService.validateUser($scope.model).then(function success(data) {
+        if (data && data === "user validation fail") {
+          console.log("connect fail!");
+          $ionicPopup.alert({
+            title: 'Sign-in Failed',
+            template: 'Please check that your username and password are correct!'
+          });
+        } else {
+          console.log("login success");
+          $location.path("/tab/dash");
+        }
+
+      }, function error() {
+        //pop up
+        console.log("connect fail!");
+      });
+    };
+
+    $scope.forgotPwd = function () {
+      // Show the action sheet for forgetting password
+      var hideSheet = $ionicActionSheet.show({
+        button:[
+          {text: 'Forgot Password?'},
+          {text: 'New User?'}
+        ],
+        cancel: function(){
+
+        },
+        buttonClicked: function (index) {
+          return true;
+
+        }
+      });
+
 
     };
 
@@ -55,7 +86,7 @@ angular.module('tradeapp.controllers', [])
     $scope.createNewUser = function () {
       console.log("create new user");
 
-      signUpService.create($scope.model).then(function(){
+      signUpService.create($scope.model).then(function () {
         $location.path('/login');
       })
       // console.log($scope.model.firstname);
@@ -68,16 +99,17 @@ angular.module('tradeapp.controllers', [])
     $log.log(pageNameService.getPageName());
   })
 
-  .controller('WelcomeCtrl', function ($scope, $location, $log, pageNameService) {
+  .controller('WelcomeCtrl', function ($scope, $location, $log, $ionicActionSheet, pageNameService) {
     pageNameService.setPageName("welcome");
     $log.log(pageNameService.getPageName());
   })
 
-  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicLoading, pageNameService, crossPageService, localStorageService, quotesService) {
+  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicLoading, pageNameService, crossPageService, localStorageService, socketService, quotesService) {
     pageNameService.setPageName("realtime");
     $log.log(pageNameService.getPageName());
 
     // Get symbols from localstorage, set default values
+    localStorageService.clear('quotes');
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
     $scope.form = {
       query: ''
@@ -86,52 +118,25 @@ angular.module('tradeapp.controllers', [])
       reorder: false
     };
 
-
     $scope.connectSocket = function () {
-      var ws = new WebSocket("ws://127.0.0.1:8181/");
-      $log.log("Web Socket connection has been established successfully");
-
-      ws.onopen = function (event) {
-        //ws.send('{"action":"login","username":"xxhu","password":"121212"}@@');
-        ws.send('{"action":"subscribe","symbol":"uwti"}');
-        ws.send('{"action":"subscribe","symbol":"aple"}');
-        ws.send('{"action":"subscribe","symbol":"apo"}');
-        ws.send('{"action":"subscribe","symbol":"apa"}');
-        ws.send('{"action":"subscribe","symbol":"apb"}');
-
-        ws.send('{"action":"subscribe","symbol":"aht"}');
-        ws.send('{"action":"subscribe","symbol":"aig"}');
-        ws.send('{"action":"subscribe","symbol":"aiy"}');
-        ws.send('{"action":"subscribe","symbol":"ajg"}');
-        ws.send('{"action":"subscribe","symbol":"akp"}');
-        ws.send('{"action":"subscribe","symbol":"alb"}');
-
-      };
-
-      ws.onmessage = function (event) {
-        $scope.$apply(function () {
-          //[{"symbol": "uwti","ask": 66.92539153943089,"bid": 10.900888923043798,"bidsize": 347,"asksize": 354}]
-          var stockObjArr = JSON.parse(event.data);
-
-          // var symbol = stockObj[0].symbol;
-          // var ask = stockObj[0].ask;
-          // var bid = stockObj[0].bid;
-          for(var i = 0; i < stockObjArr.length; i++)
-          {
-            $scope.quotes[i] = stockObjArr[i];
-          }
+      //var sendMsg = '{"action":"subscribe","symbol":"uwti"}';
+      var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
+      $log.log(sendMsg);
+      socketService.loadRealTimeQuotes(sendMsg).then(function success(data) {
+        $log.log("receive resolve data:" + data);
+      }, function error(data) {
+        $log.log("error data:" + data);
+      }, function notify(data) {
+        $log.log("notifid data:" + data);
+        $scope.quotes = data;
+      });
 
 
+    }
 
-        });
-
-        $log.log("received a message", event.data);
-      }
-
-      ws.onclose = function (event) {
-        $log.log("connection closed");
-      }
-
+    $scope.disConnectSocket = function () {
+      var ws = socketService.getSocketConn();
+      ws.close();
     }
 
     $scope.$on('handleBroadcast', function () {
