@@ -76,6 +76,35 @@ services.factory('signInService', function ($q, $http) {
   return signInService;
 });
 
+
+
+services.factory('sendEmailForResetService', function ($q, $http) {
+
+  var sendEmailForResetService = {};
+  // Create a new deferred object
+  var defer = $q.defer();
+  sendEmailForResetService.sendEmail = function (bodyData) {
+
+    var jsonObj = angular.toJson(bodyData.email);
+    //TBD for connecting smtp to send email
+    var url = "http://localhost:8200/signup";
+
+    return $http.post(url, jsonObj);
+
+  };
+
+  // return{
+  //   save: function(form){
+  //     return $http.post('http://localhost:8080/signup',form,{
+  //       method:'Post'
+  //     });
+  //   }
+  // }
+  return sendEmailForResetService;
+});
+
+
+
 services.factory('signUpService', function ($q, $http) {
 
   var signUpService = {};
@@ -90,7 +119,7 @@ services.factory('signUpService', function ($q, $http) {
       lastname: bodyData.lastname
     };
 
-    var jsonObj = JSON.toJSON(myobject);
+    var jsonObj = angular.toJson(myobject);
     var url = "http://localhost:8200/signup";
 
     return $http.post(url, jsonObj);

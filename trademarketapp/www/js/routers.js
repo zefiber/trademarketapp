@@ -71,11 +71,24 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
       controller: 'LoginCtrl'
     })
 
+    .state('forgotpassword',{
+      url:'/forgotPassword',
+      templateUrl:'templates/forgot-password.html',
+      controller: 'forgotPwdCtrl'
+    })
+
     .state('signUp',{
       url:'/signUp',
       templateUrl:'templates/signup.html',
       controller: 'SignUpCtrl'
     })
+
+    .state('customizeStocks',{
+      url:'/customizeStocks',
+      templateUrl:'templates/customize-stocks.html',
+      controller: 'MainCtrl'
+    })
+
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');
