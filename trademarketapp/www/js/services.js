@@ -221,25 +221,26 @@ services.factory('quotesService', function ($q, $http) {
       return "'" + symbol.toUpperCase() + "'";
     });
     // Create a new deferred object
-    var defer = $q.defer();
+    //var defer = $q.defer();
     // Make the http request
-    $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in (' + symbols.join(',') + ')&format=json&env=http://datatables.org/alltables.env')
-      .success(function (quotes) {
-
-        //  $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid=2502265&format=json&env=http://datatables.org/alltables.env')
-        //    .success(function(quotes) {
-        // The API is funny, if only one result is returned it is an object, multiple results are an array. This forces it to be an array for consistency
-        if (quotes.query.count === 1) {
-          quotes.query.results.quote = [quotes.query.results.quote];
-        }
-        // Resolve the promise with the data
-        defer.resolve(quotes.query.results.quote);
-      }).error(function (error) {
-      // If an error occurs, reject the promise with the error
-      defer.reject(error);
-    });
+    // $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in (' + symbols.join(',') + ')&format=json&env=http://datatables.org/alltables.env')
+    //   .success(function (quotes) {
+    //
+    //     //  $http.get('https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid=2502265&format=json&env=http://datatables.org/alltables.env')
+    //     //    .success(function(quotes) {
+    //     // The API is funny, if only one result is returned it is an object, multiple results are an array. This forces it to be an array for consistency
+    //     if (quotes.query.count === 1) {
+    //       quotes.query.results.quote = [quotes.query.results.quote];
+    //     }
+    //     // Resolve the promise with the data
+    //     defer.resolve(quotes.query.results.quote);
+    //   }).error(function (error) {
+    //   // If an error occurs, reject the promise with the error
+    //   defer.reject(error);
+    // });
     // Return the promise
-    return defer.promise;
+    //defer.resolve;
+    //return defer.promise;
   };
 
   return quotesService;

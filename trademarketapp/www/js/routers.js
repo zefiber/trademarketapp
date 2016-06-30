@@ -86,9 +86,15 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
     .state('customizeStocks',{
       url:'/customizeStocks',
       templateUrl:'templates/customize-stocks.html',
-      controller: 'MainCtrl'
+      controller: 'customizeStocksCtrl',
+      cache: false
     })
 
+    .state('searchNewStock',{
+      url:'/searchNewStock',
+      templateUrl:'templates/search-new-stock.html',
+      controller: 'searchNewStockCtrl'
+    })
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');

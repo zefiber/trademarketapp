@@ -20,3 +20,6 @@
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
 </widget>
+<platform name="ios">
+    <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
+</platform>

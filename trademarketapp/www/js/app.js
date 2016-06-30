@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-var tradeapp = angular.module('tradeapp', ['ionic', 'tradeapp.controllers', 'tradeapp.services'])
+var tradeapp = angular.module('tradeapp', ['ionic', 'ui.router','jett.ionic.filter.bar', 'tradeapp.controllers', 'tradeapp.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {

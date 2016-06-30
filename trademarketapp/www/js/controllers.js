@@ -139,16 +139,16 @@ angular.module('tradeapp.controllers', [])
     $log.log(pageNameService.getPageName());
   })
 
-  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicLoading, pageNameService, crossPageService, localStorageService, socketService, quotesService) {
+  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicPopup, $ionicLoading, pageNameService, crossPageService, localStorageService, socketService, quotesService) {
     pageNameService.setPageName("realtime");
     $log.log(pageNameService.getPageName());
 
     // Get symbols from localstorage, set default values
     localStorageService.clear('quotes');
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
-    $scope.form = {
-      query: ''
-    };
+    // $scope.form = {
+    //   query: ''
+    // };
     $scope.state = {
       reorder: false
     };
@@ -198,38 +198,38 @@ angular.module('tradeapp.controllers', [])
     // Method to load quotes, or show an alert on error, and finally close the loader
     $scope.getQuotes = function () {
 
-      quotesService.get($scope.symbols).then(function (quotes) {
-        $scope.quotes = quotes;
-      }, function (error) {
-        $ionicPopup.alert({
-          template: 'Could not load quotes right now. Please try again later.'
-        });
-      }).finally(function () {
-        $ionicLoading.hide();
-        $scope.$broadcast('scroll.refreshComplete');
-      });
+      // quotesService.get($scope.symbols).then(function (quotes) {
+      //   $scope.quotes = quotes;
+      // }, function (error) {
+      //   $ionicPopup.alert({
+      //     template: 'Could not load quotes right now. Please try again later.'
+      //   });
+      // }).finally(function () {
+      //   $ionicLoading.hide();
+      //   $scope.$broadcast('scroll.refreshComplete');
+      // });
     };
     // Method to load a quote's data and add it to the list, or show alert for not found
     $scope.add = function () {
-      if ($scope.form.query) {
-        quotesService.get([$scope.form.query]).then(function (results) {
-          if (results[0].Name) {
-            $scope.symbols.push($scope.form.query);
-            $scope.quotes.push(results[0]);
-            $scope.form.query = '';
-            updateSymbols();
-          } else {
-            $ionicPopup.alert({
-              title: 'Could not locate symbol.'
-            });
-          }
-        });
-      }
+      // if ($scope.form.query) {
+      //   quotesService.get([$scope.form.query]).then(function (results) {
+      //     if (results[0].Name) {
+      //       $scope.symbols.push($scope.form.query);
+      //       $scope.quotes.push(results[0]);
+      //       $scope.form.query = '';
+      //       updateSymbols();
+      //     } else {
+      //       $ionicPopup.alert({
+      //         title: 'Could not locate symbol.'
+      //       });
+      //     }
+      //   });
+      // }
     };
     // Method to remove a quote from the list
     $scope.remove = function ($index) {
       $scope.symbols.splice($index, 1);
-      $scope.quotes.splice($index, 1);
+      //$scope.quotes.splice($index, 1);
       updateSymbols();
     };
     // Method to give a class based on the quote price vs closing
@@ -243,13 +243,13 @@ angular.module('tradeapp.controllers', [])
       return '';
     };
     // Start by showing the loader the first time, and request the quotes
-    $ionicLoading.show();
-    $scope.getQuotes();
+    //$ionicLoading.show();
+    //$scope.getQuotes();
 
 
   })
 
-  .controller('MainCtrl', function ($scope, $location, $log, crossPageService, pageNameService) {
+  .controller('MainCtrl', function ($scope, $state,$location, $log, $timeout, $ionicFilterBar, crossPageService, pageNameService) {
     pageNameService.setPageName("index");
     $scope.pageName = pageNameService.getPageName();
     $log.log(pageNameService.getPageName());
@@ -270,43 +270,74 @@ angular.module('tradeapp.controllers', [])
       $location.path("/customizeStocks");
     };
 
+
+    //filter bar
+    var filterBarInstance;
+
+    function getItems () {
+      var items = [];
+      for (var x = 1; x < 2000; x++) {
+        items.push({text: 'This is item number ' + x + ' which is an ' + (x % 2 === 0 ? 'EVEN' : 'ODD') + ' number.'});
+      }
+      $scope.items = items;
+    }
+
+    getItems();
+
+    $scope.showFilterBar = function () {
+      filterBarInstance = $ionicFilterBar.show({
+        items: $scope.items,
+        update: function (filteredItems, filterText) {
+          $scope.items = filteredItems;
+          if (filterText) {
+            console.log(filterText);
+          }
+        }
+      });
+    };
+
+    $scope.refreshItems = function () {
+      if (filterBarInstance) {
+        filterBarInstance();
+        filterBarInstance = null;
+      }
+
+      $timeout(function () {
+        getItems();
+        $scope.$broadcast('scroll.refreshComplete');
+      }, 1000);
+    };
+
+    $scope.showSearchNew = function(){
+      $location.path("/searchNewStock");
+    }
+
+
+    $scope.editDone = function(){
+      $location.path("/tab/dash");
+    }
+
+
   })
 
 
-  .controller('customizeStocksCtrl', function ($scope, $location, $log, $ionicLoading, pageNameService, crossPageService, localStorageService, socketService, quotesService) {
-    pageNameService.setPageName("realtime");
+  .controller('customizeStocksCtrl', function ($scope,$state, $location, $log, $state,$ionicPopup, $ionicLoading, $ionicFilterBar, $timeout, pageNameService, crossPageService, localStorageService, socketService, quotesService) {
+    pageNameService.setPageName("customizeStocks");
     $log.log(pageNameService.getPageName());
 
     // Get symbols from localstorage, set default values
-    localStorageService.clear('quotes');
+    //localStorageService.clear('quotes');
+
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
-    $scope.form = {
-      query: ''
-    };
+
+    // $scope.form = {
+    //   query: ''
+    // };
     $scope.state = {
       reorder: false
     };
 
-    $scope.connectSocket = function () {
-      //var sendMsg = '{"action":"subscribe","symbol":"uwti"}';
-      var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
-      $log.log(sendMsg);
-      socketService.loadRealTimeQuotes(sendMsg).then(function success(data) {
-        $log.log("receive resolve data:" + data);
-      }, function error(data) {
-        $log.log("error data:" + data);
-      }, function notify(data) {
-        $log.log("notifid data:" + data);
-        $scope.quotes = data;
-      });
 
-
-    }
-
-    $scope.disConnectSocket = function () {
-      var ws = socketService.getSocketConn();
-      ws.close();
-    }
 
     $scope.$on('handleBroadcast', function () {
       $scope.state.reorder = crossPageService.getReorder();
@@ -316,49 +347,18 @@ angular.module('tradeapp.controllers', [])
     // Function to update the symbols in localstorage
     function updateSymbols() {
       var symbols = [];
-      angular.forEach($scope.quotes, function (stock) {
-        symbols.push(stock.Symbol);
+      angular.forEach($scope.symbols, function (symbol) {
+        symbols.push(symbol);
       });
       $scope.symbols = symbols;
       localStorageService.update('quotes', symbols);
     }
 
     // Method to handle reordering of items in the list
-    $scope.reorder = function (stock, $fromIndex, $toIndex) {
-      $scope.quotes.splice($fromIndex, 1);
-      $scope.quotes.splice($toIndex, 0, stock);
+    $scope.reorder = function (symbol, $fromIndex, $toIndex) {
+      $scope.symbols.splice($fromIndex, 1);
+      $scope.symbols.splice($toIndex, 0 ,symbol);
       updateSymbols();
-    };
-    // Method to load quotes, or show an alert on error, and finally close the loader
-    $scope.getQuotes = function () {
-
-      quotesService.get($scope.symbols).then(function (quotes) {
-        $scope.quotes = quotes;
-      }, function (error) {
-        $ionicPopup.alert({
-          template: 'Could not load quotes right now. Please try again later.'
-        });
-      }).finally(function () {
-        $ionicLoading.hide();
-        $scope.$broadcast('scroll.refreshComplete');
-      });
-    };
-    // Method to load a quote's data and add it to the list, or show alert for not found
-    $scope.add = function () {
-      if ($scope.form.query) {
-        quotesService.get([$scope.form.query]).then(function (results) {
-          if (results[0].Name) {
-            $scope.symbols.push($scope.form.query);
-            $scope.quotes.push(results[0]);
-            $scope.form.query = '';
-            updateSymbols();
-          } else {
-            $ionicPopup.alert({
-              title: 'Could not locate symbol.'
-            });
-          }
-        });
-      }
     };
     // Method to remove a quote from the list
     $scope.remove = function ($index) {
@@ -369,23 +369,34 @@ angular.module('tradeapp.controllers', [])
 
     $scope.onItemDelete = function($index){
       $scope.symbols.splice($index, 1);
-      $scope.quotes.splice($index, 1);
       updateSymbols();
     }
 
-    // Method to give a class based on the quote price vs closing
-    $scope.quoteClass = function (quote) {
-      if (quote.PreviousClose < quote.LastTradePriceOnly) {
-        return 'positive';
-      }
-      if (quote.PreviousClose > quote.LastTradePriceOnly) {
-        return 'negative';
-      }
-      return '';
-    };
     // Start by showing the loader the first time, and request the quotes
-    $ionicLoading.show();
-    $scope.getQuotes();
+    //$ionicLoading.show();
+    //$scope.getQuotes();
+
+  })
+
+
+  .controller('searchNewStockCtrl', function ($rootScope,$scope, $state,$location, $log, $timeout, $ionicFilterBar, localStorageService, crossPageService, pageNameService) {
+    pageNameService.setPageName("index");
+    $scope.pageName = pageNameService.getPageName();
+    $log.log(pageNameService.getPageName());
+
+    $scope.addNewStock = function(symbol){
+      var symbols = [];
+      if(localStorageService.get('quotes')){
+        symbols = localStorageService.get('quotes');
+      }
+      if(symbol){
+        symbols.push(symbol);
+      }
+
+      localStorageService.update('quotes', symbols);
+
+      $location.path("/customizeStocks");
+    }
 
 
   })
