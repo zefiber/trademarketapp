@@ -15,7 +15,8 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
     .state('tab', {
       url: '/tab',
       abstract: true,
-      templateUrl: 'templates/tabs.html'
+      templateUrl: 'templates/tabs.html',
+      cache:false
     })
 
     // Each tab has its own nav history stack:
@@ -25,7 +26,8 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
       views: {
         'tab-dash': {
           templateUrl: 'templates/tab-dash.html',
-          controller: 'DashCtrl'
+          controller: 'RealTimeDataCtrl',
+          cache: false
         }
       }
     })

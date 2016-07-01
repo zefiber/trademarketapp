@@ -14,25 +14,24 @@
     </ion-nav-buttons>
 
     <ion-nav-buttons side="secondary">
-      <button class="button button-clear" ng-click=""></button>
+      <button class="button button-clear" ng-click="goBack()">Back</button>
     </ion-nav-buttons>
 
   </ion-nav-bar>
 
-  <ion-content direction="y" scrollbar-y="true" ng-controller="searchNewStockCtrl">
+  <ion-content overflow-scroll="true" direction="y" scrollbar-y="true" ng-controller="searchNewStockCtrl">
 
     <ion-refresher pulling-icon="ion-arrow-down-b" on-refresh="refreshItems()">
     </ion-refresher>
 
-    <ion-list>
-      <ion-item collection-repeat="item in items" >
-        <button class="button-clear" ng-click="addNewStock(item.text)"><p>{{item.text}}</p></button>
+    <ion-list >
+      <ion-item  ng-repeat="item in items" ng-click="addNewStock(item.text)">
+        <p>{{item.text}}</p>
       </ion-item>
     </ion-list>
 
-    <div ng-if="items !== undefined && !items.length" class="no-results">
-      <p>No Results</p>
-    </div>
-
   </ion-content>
+
+
+
 </ion-view>

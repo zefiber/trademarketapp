@@ -258,7 +258,7 @@ services.factory('localStorageService', function () {
       } catch (error) {
         stored = null;
       }
-      console.log(stored);
+      console.log("local storage:" + stored);
       if (defaultValue && stored === null) {
         stored = defaultValue;
       }

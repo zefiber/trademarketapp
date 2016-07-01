@@ -1,5 +1,3 @@
-
-
 <ion-view view-title="Real Time Data">
   <ion-header-bar class="bar-calm">
 
@@ -7,14 +5,14 @@
   </ion-header-bar>
 
   <ion-nav-bar class="bar-calm">
-  <ion-nav-buttons side="primary" >
-    <button class="button button-clear" ng-click="openModal()"><i class="icon ion-ios-plus-empty"></i></button>
-  </ion-nav-buttons>
-  <ion-nav-buttons side="secondary">
-    <button class="button button-clear" ng-click="customize()">Customize</button>
-  </ion-nav-buttons>
-</ion-nav-bar>
-  <div class="bar bar-subheader" >
+    <ion-nav-buttons side="primary">
+      <button class="button button-clear" ng-click="leftMenu()">left menu</i></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="secondary">
+      <button class="button button-clear" ng-click="customize()">Customize</button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <div class="bar bar-subheader">
     <h2 class="title">
       <div class="row">
         <div class="col">Symbol</div>
@@ -24,39 +22,34 @@
     </h2>
   </div>
 
-  <ion-content class="ionic-scroll has-header has-subheader has-tabs" ng-controller="RealTimeDataCtrl">
-    <!-- Add buttons to both primary and secondary sides of the navbar -->
+  <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="RealTimeDataCtrl">
 
-        <div class="row">
-          <div class="col col-center">
-            <button class="button button-calm" ng-click="connectSocket()">
-              connect
-            </button>
-            <button class="button button-calm" ng-click="disConnectSocket()">
-              disconnect
-            </button>
-          </div>
-        </div>
+    <!-- two buttons for debugging socket connection-->
+    <!--<div class="row">
+      <div class="col col-center">
+        <button class="button button-calm" ng-click="connectSocket()">
+          connect
+        </button>
+        <button class="button button-calm" ng-click="disConnectSocket()">
+          disconnect
+        </button>
+      </div>
+    </div>
+    -->
+    <ion-list>
+      <!-- Repeat over each quote, to display the current details and name -->
+      <ion-item ng-repeat="stock in quotes">
 
-        <!-- ionRefresher activates when the user pulls down and calls getQuotes() -->
+        <div style="display:inline-block;width:33%" class="col-offset-10">{{stock.symbol}}</div>
+        <div style="display:inline-block;width:33%">{{stock.ask | currency:'$'}}</div>
+        <div style="display:inline-block;width:33%">{{stock.bid | currency: '$'}}</div>
+      </ion-item>
+    </ion-list>
 
-        <!-- ionList allows us to make a complex list with swipe buttons, reordering, and more -->
-          <ion-list show-reorder=state.reorder>
-            <!-- Repeat over each quote, to display the current details and name -->
-            <ion-item ng-repeat="stock in quotes">
-
-                <div style="display:inline-block;width:33%" class="col-offset-10">{{stock.symbol}}</div>
-                <div style="display:inline-block;width:33%">{{stock.ask | currency:'$'}}</div>
-                <div style="display:inline-block;width:33%" >{{stock.bid | currency: '$'}}</div>
-
-              <!-- Option and reorder button for list items -->
-              <ion-option-button class="button-assertive" ng-click="remove($index)">Remove</ion-option-button>
-              <ion-reorder-button on-reorder="reorder(stock, $fromIndex, $toIndex)" class="ion-navicon"></ion-reorder-button>
-
-            </ion-item>
-          </ion-list>
-
-
+    <br>
+    <div ng-show="!quotes.length" class="col-offset-33 no-results">
+      <p>No Stocks Subscribed</p>
+    </div>
   </ion-content>
 
 
