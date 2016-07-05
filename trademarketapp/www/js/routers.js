@@ -69,7 +69,6 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
     })
 
 
-
     .state('login', {
       url: '/login',
       templateUrl: 'templates/login.html',
@@ -79,7 +78,15 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
     .state('listWatchlist', {
       url: '/listWatchList',
       templateUrl: 'templates/list-watchlist.html',
-      controller: 'listWatchListCtrl'
+      controller: 'listWatchListCtrl',
+      cache:false
+    })
+
+    .state('listAcctlist', {
+      url: '/listAcctList',
+      templateUrl: 'templates/list-accountlist.html',
+      controller: 'listAcctListCtrl',
+      cache:false
     })
 
     .state('detailWatchlist', {
@@ -113,6 +120,7 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/search-new-stock.html',
       controller: 'searchNewStockCtrl'
     })
+
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');

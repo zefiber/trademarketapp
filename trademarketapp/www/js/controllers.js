@@ -138,6 +138,23 @@ angular.module('tradeapp.controllers', [])
 
   })
 
+  .controller('listAcctListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, signInService) {
+
+    pageNameService.setPageName("list accountlist");
+    $log.log(pageNameService.getPageName());
+
+    $scope.goDetailAcctList = function () {
+      $state.go("tab.dash");
+
+
+    }
+
+    $scope.goBackToListWatchList = function() {
+      $location.path("/listWatchList");
+    }
+
+
+  })
 
 
   .controller('detailWatchListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, localStorageService,socketService ) {

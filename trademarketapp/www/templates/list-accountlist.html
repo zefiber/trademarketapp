@@ -9,7 +9,7 @@ navigation history that also transitions its views in and out.
   <ion-side-menu-content>
 
 
-    <ion-view view-title="Watch List">
+    <ion-view view-title="Account List">
       <ion-nav-view>
         <ion-nav-bar class="bar-calm" style="display: block">
 
@@ -18,14 +18,9 @@ navigation history that also transitions its views in and out.
             </button>
           </ion-nav-buttons>
 
-          <ion-nav-buttons side="right">
-            <button class="button button-icon button-clear ion-navicon" >
-            </button>
-          </ion-nav-buttons>
-
 
           </button>
-          <ion-nav-title class="bar-calm">Watch List</ion-nav-title>
+          <ion-nav-title class="bar-calm">Account List</ion-nav-title>
         </ion-nav-bar>
       </ion-nav-view>
 
@@ -33,19 +28,19 @@ navigation history that also transitions its views in and out.
       <div class="bar bar-subheader">
         <h2 class="title">
           <div class="row">
-            <div class="col">Watch List Name</div>
+            <div class="col">Account List Name</div>
             <div class="col">Note</div>
           </div>
         </h2>
       </div>
 
-      <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="listWatchListCtrl">
+      <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="listAcctListCtrl">
 
         <ion-list>
           <!-- Repeat over each quote, to display the current details and name -->
-          <ion-item ng-click="goDetailWatchList()">
-            <div style="display:inline-block;width:33%" class="col-offset-10">WatchList 1</div>
-            <div style="display:inline-block;width:33%" class="col-offset-10">Try watchlist</div>
+          <ion-item ng-click="goDetailAcctList()">
+            <div style="display:inline-block;width:33%" class="col-offset-10">AccountList 1</div>
+            <div style="display:inline-block;width:33%" class="col-offset-10">Try accountlist</div>
           </ion-item>
         </ion-list>
 
