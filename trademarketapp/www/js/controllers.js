@@ -77,7 +77,8 @@ angular.module('tradeapp.controllers', [])
           });
         } else {
           console.log("login success");
-          $state.go("tab.dash");
+          //$state.go("tab.dash");
+          $location.path("/listWatchList");
         }
 
       }, function error() {
@@ -85,6 +86,9 @@ angular.module('tradeapp.controllers', [])
         console.log("connect fail!");
       });
     };
+
+
+
 
     $scope.forgotPwd = function () {
       // Show the action sheet for forgetting password
@@ -116,6 +120,92 @@ angular.module('tradeapp.controllers', [])
     $log.log(pageNameService.getPageName());
 
   })
+
+  .controller('listWatchListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, signInService) {
+
+    pageNameService.setPageName("list watchlist");
+    $log.log(pageNameService.getPageName());
+
+    $scope.goDetailWatchList = function () {
+      $location.path("/detailWatchList");
+
+    }
+
+    $scope.goBackToListWatchList = function() {
+      $location.path("/listWatchList");
+    }
+
+
+  })
+
+
+
+  .controller('detailWatchListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, localStorageService,socketService ) {
+
+    pageNameService.setPageName("list watchlist");
+    $log.log(pageNameService.getPageName());
+
+    $scope.goDetailWatchList = function () {
+      $state.go("tab.dash");
+    }
+
+    $scope.goBackToListWatchList = function() {
+      $location.path("/listWatchList");
+    }
+
+    pageNameService.setPageName("detail watch list");
+    $log.log("current page:" + pageNameService.getPageName());
+
+    // Get symbols from localstorage, set default values
+    //localStorageService.clear('quotes');
+
+    $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
+
+    $scope.connectSocket = function () {
+      //var sendMsg = '{"action":"subscribe","symbol":"uwti"}';
+      var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
+      $log.log("send message:" + sendMsg);
+      socketService.loadRealTimeQuotes(sendMsg).then(function success(data) {
+        $log.log("receive resolve data:" + data);
+      }, function error(data) {
+        $log.log("error data:" + data);
+      }, function notify(data) {
+        $log.log("notifid data:" + data);
+        $scope.quotes = data;
+      });
+    }
+
+    $scope.disConnectSocket = function () {
+      var ws = socketService.getSocketConn();
+      ws.close();
+    }
+
+    // Function to update the symbols in localstorage
+    function updateSymbols() {
+      var symbols = [];
+      angular.forEach($scope.quotes, function (stock) {
+        symbols.push(stock.Symbol);
+      });
+      $scope.symbols = symbols;
+      localStorageService.update('quotes', symbols);
+    }
+
+    // start to connect to the socket to retrieve real time data when come to the page
+    $scope.$on("$ionicView.beforeEnter", function(event, data){
+      // handle event
+      console.log("State: preLoadDetailWatchListPage");
+      $scope.connectSocket();
+    });
+
+    $scope.$on("$ionicView.beforeLeave", function(event, data){
+      // handle event
+      console.log("State: beforeLeaveDetailWatchListPage");
+      $scope.disConnectSocket();
+    });
+
+
+  })
+
 
   .controller('SignUpCtrl', function ($scope, $location, $log, pageNameService, signUpService) {
     $scope.pageName = "signup";
@@ -198,7 +288,7 @@ angular.module('tradeapp.controllers', [])
 
     $scope.customize = function(){
       // socketService.getSocketConn().close();
-      $location.path("/customizeStocks");
+      $location.path("/customizeWatchList");
     };
 
     //filter bar
@@ -256,15 +346,15 @@ angular.module('tradeapp.controllers', [])
     }
 
     $scope.goBack = function(){
-      $location.path("/customizeStocks");
+      $location.path("/customizeWatchList");
     }
 
 
   })
 
 
-  .controller('customizeStocksCtrl', function ($scope,$state, $location, $log, $state,$ionicPopup, $ionicLoading, $ionicFilterBar, $timeout, pageNameService, localStorageService, socketService, quotesService) {
-    pageNameService.setPageName("customizeStocks");
+  .controller('customizeWatchListCtrl', function ($scope,$state, $location, $log, $state,$ionicPopup, $ionicLoading, $ionicFilterBar, $timeout, pageNameService, localStorageService, socketService, quotesService) {
+    pageNameService.setPageName("customizeWatchList");
     $log.log(pageNameService.getPageName());
 
     // Get symbols from localstorage, set default values
@@ -295,6 +385,12 @@ angular.module('tradeapp.controllers', [])
     }
 
 
+    $scope.editDone = function($index){
+      $location.path("/listWatchList");
+    }
+
+
+
   })
 
 
@@ -314,7 +410,7 @@ angular.module('tradeapp.controllers', [])
 
       localStorageService.update('quotes', symbols);
 
-      $location.path("/customizeStocks");
+      $location.path("/customizeWatchList");
     }
 
 

@@ -3,7 +3,7 @@
  */
 
 //Routers
-tradeapp.config(function($stateProvider, $urlRouterProvider) {
+tradeapp.config(function ($stateProvider, $urlRouterProvider) {
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -16,7 +16,7 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
       url: '/tab',
       abstract: true,
       templateUrl: 'templates/tabs.html',
-      cache:false
+      cache: false
     })
 
     // Each tab has its own nav history stack:
@@ -31,6 +31,7 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
         }
       }
     })
+
 
     .state('tab.chats', {
       url: '/chats',
@@ -61,40 +62,55 @@ tradeapp.config(function($stateProvider, $urlRouterProvider) {
       }
     })
 
-  .state('welcome',{
-    url:'/welcome',
-    templateUrl:'templates/welcome.html',
-    controller: 'WelcomeCtrl'
-  })
+    .state('welcome', {
+      url: '/welcome',
+      templateUrl: 'templates/welcome.html',
+      controller: 'WelcomeCtrl'
+    })
 
-    .state('login',{
-      url:'/login',
-      templateUrl:'templates/login.html',
+
+
+    .state('login', {
+      url: '/login',
+      templateUrl: 'templates/login.html',
       controller: 'LoginCtrl'
     })
 
-    .state('forgotpassword',{
-      url:'/forgotPassword',
-      templateUrl:'templates/forgot-password.html',
+    .state('listWatchlist', {
+      url: '/listWatchList',
+      templateUrl: 'templates/list-watchlist.html',
+      controller: 'listWatchListCtrl'
+    })
+
+    .state('detailWatchlist', {
+      url: '/detailWatchList',
+      templateUrl: 'templates/detail-watchlist.html',
+      controller: 'detailWatchListCtrl'
+    })
+
+
+    .state('forgotpassword', {
+      url: '/forgotPassword',
+      templateUrl: 'templates/forgot-password.html',
       controller: 'forgotPwdCtrl'
     })
 
-    .state('signUp',{
-      url:'/signUp',
-      templateUrl:'templates/signup.html',
+    .state('signUp', {
+      url: '/signUp',
+      templateUrl: 'templates/signup.html',
       controller: 'SignUpCtrl'
     })
 
-    .state('customizeStocks',{
-      url:'/customizeStocks',
-      templateUrl:'templates/customize-stocks.html',
-      controller: 'customizeStocksCtrl',
+    .state('customizeWatchList', {
+      url: '/customizeWatchList',
+      templateUrl: 'templates/customize-watchlist.html',
+      controller: 'customizeWatchListCtrl',
       cache: false
     })
 
-    .state('searchNewStock',{
-      url:'/searchNewStock',
-      templateUrl:'templates/search-new-stock.html',
+    .state('searchNewStock', {
+      url: '/searchNewStock',
+      templateUrl: 'templates/search-new-stock.html',
       controller: 'searchNewStockCtrl'
     })
 
