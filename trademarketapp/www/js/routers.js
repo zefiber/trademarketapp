@@ -21,23 +21,23 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
 
     // Each tab has its own nav history stack:
 
-    .state('tab.dash', {
-      url: '/dash',
+    .state('tab.holdings', {
+      url: '/holdings',
       views: {
-        'tab-dash': {
-          templateUrl: 'templates/tab-dash.html',
-          controller: 'RealTimeDataCtrl',
-          cache: false
+        'tab-holdings': {
+          templateUrl: 'templates/tab-holdings.html',
+          //controller: 'AcctHoldingsCtrl',
+          cache: true
         }
       }
     })
 
 
-    .state('tab.chats', {
-      url: '/chats',
+    .state('tab.orders', {
+      url: '/orders',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
+        'tab-orders': {
+          templateUrl: 'templates/tab-orders.html',
           controller: 'ChatsCtrl'
         }
       }
@@ -52,11 +52,21 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
       }
     })
 
-    .state('tab.account', {
-      url: '/account',
+    .state('tab.activities', {
+      url: '/activities',
       views: {
-        'tab-account': {
-          templateUrl: 'templates/tab-account.html',
+        'tab-activities': {
+          templateUrl: 'templates/tab-activities.html',
+          controller: 'AccountCtrl'
+        }
+      }
+    })
+
+    .state('tab.acctsummary', {
+      url: '/acctsummary',
+      views: {
+        'tab-acctsummary': {
+          templateUrl: 'templates/tab-acct-summary.html',
           controller: 'AccountCtrl'
         }
       }
@@ -72,20 +82,20 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
     .state('login', {
       url: '/login',
       templateUrl: 'templates/login.html',
-      controller: 'LoginCtrl'
+      // controller: 'LoginCtrl'
     })
 
     .state('listWatchlist', {
       url: '/listWatchList',
       templateUrl: 'templates/list-watchlist.html',
-      controller: 'listWatchListCtrl',
+      //controller: 'listWatchListCtrl',
       cache:false
     })
 
     .state('listAcctlist', {
       url: '/listAcctList',
       templateUrl: 'templates/list-accountlist.html',
-      controller: 'listAcctListCtrl',
+      //controller: 'listAcctListCtrl',
       cache:false
     })
 
@@ -105,20 +115,35 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
     .state('signUp', {
       url: '/signUp',
       templateUrl: 'templates/signup.html',
-      controller: 'SignUpCtrl'
+      // controller: 'SignUpCtrl'
     })
 
     .state('customizeWatchList', {
       url: '/customizeWatchList',
       templateUrl: 'templates/customize-watchlist.html',
-      controller: 'customizeWatchListCtrl',
-      cache: false
+      // controller: 'customizeWatchListCtrl',
+      cache: true
+    })
+
+    .state('editListWatchList', {
+      url: '/editListWatchList',
+      templateUrl: 'templates/edit-list-watchlist.html',
+      // controller: 'customizeWatchListCtrl',
+      cache: true
+    })
+
+    .state('customizeAccount', {
+      url: '/customizeAccount',
+      templateUrl: 'templates/customize-account.html',
+      //controller: 'customizeAcctCtrl',
+      cache: true
     })
 
     .state('searchNewStock', {
       url: '/searchNewStock',
       templateUrl: 'templates/search-new-stock.html',
-      controller: 'searchNewStockCtrl'
+      //controller: 'searchNewStockCtrl'
+      cache: false
     })
 
 

@@ -1,16 +1,16 @@
-<ion-view view-title="Real Time Data">
+<ion-view view-title="Account1">
   <ion-header-bar class="bar-calm">
 
-    <h1 class="title">Real Time Data</h1>
+    <h1 class="title">Account1</h1>
   </ion-header-bar>
 
   <ion-nav-bar class="bar-calm">
     <ion-nav-buttons side="primary">
-      <button class="button button-clear" ng-click="leftMenu()">Back</i></button>
+      <button class="button button-clear" ng-click="goBackToListAcctList()">Back</i></button>
     </ion-nav-buttons>
 
     <ion-nav-buttons side="secondary">
-      <button class="button button-clear" ng-click="customize()">Customize</button>
+      <button class="button button-clear" ng-click="goCustomizeAccount()">Customize</button>
     </ion-nav-buttons>
   </ion-nav-bar>
   <div class="bar bar-subheader">
@@ -23,7 +23,7 @@
     </h2>
   </div>
 
-  <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="RealTimeDataCtrl">
+  <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="AcctHoldingsCtrl">
 
     <!-- two buttons for debugging socket connection-->
     <!--<div class="row">

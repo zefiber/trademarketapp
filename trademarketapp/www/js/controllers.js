@@ -121,7 +121,7 @@ angular.module('tradeapp.controllers', [])
 
   })
 
-  .controller('listWatchListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, signInService) {
+  .controller('listWatchListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService) {
 
     pageNameService.setPageName("list watchlist");
     $log.log(pageNameService.getPageName());
@@ -138,19 +138,19 @@ angular.module('tradeapp.controllers', [])
 
   })
 
-  .controller('listAcctListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService, signInService) {
+  .controller('listAcctListCtrl', function ($scope, $state,$location, $log, $ionicPopup, $ionicActionSheet, $timeout, pageNameService) {
 
-    pageNameService.setPageName("list accountlist");
+    pageNameService.setPageName("list accountlist in listAcctListCtrl");
     $log.log(pageNameService.getPageName());
 
     $scope.goDetailAcctList = function () {
-      $state.go("tab.dash");
+      $state.go("tab.holdings");
 
 
     }
 
-    $scope.goBackToListWatchList = function() {
-      $location.path("/listWatchList");
+    $scope.goBackToListAcctList = function() {
+      $location.path("/listAcctList");
     }
 
 
@@ -244,8 +244,8 @@ angular.module('tradeapp.controllers', [])
     $log.log("current page:" + pageNameService.getPageName());
   })
 
-  .controller('RealTimeDataCtrl', function ($scope, $location, $log, $ionicPopup, $ionicLoading, pageNameService, localStorageService, socketService, quotesService) {
-    pageNameService.setPageName("realtime");
+  .controller('AcctHoldingsCtrl', function ($scope, $location, $log, $ionicPopup, $ionicLoading, pageNameService, localStorageService, socketService) {
+    pageNameService.setPageName("account holding");
     $log.log("current page:" + pageNameService.getPageName());
 
     // Get symbols from localstorage, set default values
@@ -285,27 +285,36 @@ angular.module('tradeapp.controllers', [])
     // start to connect to the socket to retrieve real time data when come to the page
     $scope.$on("$ionicView.beforeEnter", function(event, data){
       // handle event
-      console.log("State: preLoadRealTimePage");
+      console.log("State: preLoadAcctHoldingsPage");
       $scope.connectSocket();
     });
 
     $scope.$on("$ionicView.beforeLeave", function(event, data){
       // handle event
-      console.log("State: beforeLeaveRealTimePage");
+      console.log("State: beforeLeaveAcctHoldingsPage");
       $scope.disConnectSocket();
     });
 
 
   })
 
-  .controller('MainCtrl', function ($scope, $state,$location, $log, $timeout, $ionicFilterBar, pageNameService, socketService) {
+  .controller('MainCtrl', function ($scope, $state,$location, $log, $timeout, $ionicFilterBar, $ionicHistory,pageNameService) {
     pageNameService.setPageName("index");
     $scope.pageName = pageNameService.getPageName();
     $log.log(pageNameService.getPageName());
 
-    $scope.customize = function(){
+    $scope.goCustomizeWatchList = function(){
       // socketService.getSocketConn().close();
       $location.path("/customizeWatchList");
+    };
+
+    $scope.editListWatchList = function(){
+      $location.path("/editListWatchList");
+    };
+
+
+    $scope.goCustomizeAccount = function(){
+      $location.path("/customizeAccount");
     };
 
     //filter bar
@@ -358,19 +367,32 @@ angular.module('tradeapp.controllers', [])
     }
 
 
-    $scope.editDone = function(){
-      $location.path("/tab/dash");
+     $scope.accountEditDone = function(){
+       // $location.path("/tab/dash");
+       $state.go("tab.holdings");
+     }
+
+    $scope.watchListCustomizeDone = function(){
+      $state.go("detailWatchlist");
+    }
+
+    $scope.watchListEditDone = function(){
+      $state.go("listWatchlist");
     }
 
     $scope.goBack = function(){
-      $location.path("/customizeWatchList");
+      $ionicHistory.goBack();
+    }
+
+    $scope.goBackToListAcctList = function(){
+      $location.path("/listAcctList");
     }
 
 
   })
 
 
-  .controller('customizeWatchListCtrl', function ($scope,$state, $location, $log, $state,$ionicPopup, $ionicLoading, $ionicFilterBar, $timeout, pageNameService, localStorageService, socketService, quotesService) {
+  .controller('customizeWatchListCtrl', function ($scope, $location, $ionicHistory,$log, $state,$ionicPopup, $ionicLoading, $ionicFilterBar, $timeout, pageNameService, localStorageService) {
     pageNameService.setPageName("customizeWatchList");
     $log.log(pageNameService.getPageName());
 
@@ -403,7 +425,49 @@ angular.module('tradeapp.controllers', [])
 
 
     $scope.editDone = function($index){
-      $location.path("/listWatchList");
+      // $location.path("/listWatchList");
+      // $status.go("listWatchlist");
+      $ionicHistory.goBack();
+    }
+
+
+
+  })
+
+  .controller('customizeAcctCtrl', function ($scope, $location, $log, $state,$ionicPopup, $ionicLoading, $ionicFilterBar, $timeout, pageNameService, localStorageService) {
+    pageNameService.setPageName("customizeAccount");
+    $log.log(pageNameService.getPageName());
+
+    // Get symbols from localstorage, set default values
+    //localStorageService.clear('quotes');
+
+    $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
+
+    // Function to update the symbols in localstorage
+    function updateSymbols() {
+      var symbols = [];
+      angular.forEach($scope.symbols, function (symbol) {
+        symbols.push(symbol);
+      });
+      $scope.symbols = symbols;
+      localStorageService.update('quotes', symbols);
+    }
+
+    // Method to handle reordering of items in the list
+    $scope.reorder = function (symbol, $fromIndex, $toIndex) {
+      $scope.symbols.splice($fromIndex, 1);
+      $scope.symbols.splice($toIndex, 0 ,symbol);
+      updateSymbols();
+    };
+
+    $scope.onItemDelete = function($index){
+      $scope.symbols.splice($index, 1);
+      updateSymbols();
+    }
+
+
+    $scope.editDone = function($index){
+      $state.go("tab.holdings");
     }
 
 
