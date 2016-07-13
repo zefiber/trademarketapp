@@ -19,16 +19,14 @@ navigation history that also transitions its views in and out.
           </ion-nav-buttons>
 
           <ion-nav-buttons side="right">
-            <button class="button button-clear" ng-click="editListWatchList()">Edit</button>
-            </button>
+            <!--<button class="button button-clear" ng-click="editListWatchList()">Edit</button>-->
+            <button class="button button-clear" ng-click="data.showDelete = !data.showDelete">Remove</button>
           </ion-nav-buttons>
 
 
-          </button>
           <ion-nav-title class="bar-calm">Watch List</ion-nav-title>
         </ion-nav-bar>
       </ion-nav-view>
-
 
       <div class="bar bar-subheader">
         <h2 class="title">
@@ -40,15 +38,23 @@ navigation history that also transitions its views in and out.
       </div>
 
       <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="listWatchListCtrl">
-
-        <ion-list>
+        <ion-list show-delete="data.showDelete" can-swipe="true">
           <!-- Repeat over each quote, to display the current details and name -->
-          <ion-item ng-click="goDetailWatchList()">
-            <div style="display:inline-block;width:33%" class="col-offset-10">WatchList 1</div>
-            <div style="display:inline-block;width:33%" class="col-offset-10">Try watchlist</div>
+          <ion-item ng-click="goDetailWatchList()" class="item-remove-animate item-button-right" ng-repeat="watchlist in watchlists">
+            <div style="display:inline-block;width:33%" class="col-offset-10">{{watchlist.name}}</div>
+            <div style="display:inline-block;width:33%" class="col-offset-33">{{watchlist.desc}}</div>
+            <ion-delete-button class="ion-minus-circled"
+                               ng-click="onItemDelete('{{watchlist.id}}')">
+            </ion-delete-button>
+            <ion-option-button class="button-positive"
+                               ng-click="editWatchList('{{watchlist.id}}')">
+              Edit
+            </ion-option-button>
           </ion-item>
         </ion-list>
-
+        <div class="padding">
+          <a href="#/editWatchList/addNew" class="button button-block button-calm">New Watch List</a>
+        </div>
       </ion-content>
 
 

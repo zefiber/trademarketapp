@@ -19,14 +19,19 @@
 
   </ion-nav-bar>
 
-  <ion-content overflow-scroll="true" direction="y" scrollbar-y="true" ng-controller="searchNewStockCtrl">
+  <ion-content overflow-scroll="false" direction="y" scrollbar-y="false" ng-controller="searchNewStockCtrl">
 
-    <ion-refresher pulling-icon="ion-arrow-down-b" on-refresh="refreshItems()">
-    </ion-refresher>
 
     <ion-list >
+
       <ion-item  ng-repeat="item in items" ng-click="addNewStock(item)">
-        <p>{{item.text}}</p>
+        <div class=" row">
+          <div class=" col">{{item.symbol}}</div>
+          <div class=" col">{{item.currency}}</div>
+          <div class=" col">{{item.type}}</div>
+          <div class=" col">{{item.exchange}}</div>
+        </div>
+
       </ion-item>
     </ion-list>
 

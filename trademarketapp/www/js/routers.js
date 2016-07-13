@@ -146,6 +146,12 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
       cache: false
     })
 
+    .state('editWatchList', {
+      url: '/editWatchList/:isNew',
+      templateUrl: 'templates/edit-list-watchlist.html',
+      cache: false
+    })
+
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');
