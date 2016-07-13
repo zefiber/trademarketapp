@@ -180,11 +180,13 @@ services.factory('socketService', function ($rootScope, $log, $q) {
 
   this.loadRealTimeQuotes = function (msgArr) {
     var d = $q.defer();
-    var ws = new WebSocket("ws://127.0.0.1:8181/");
+    // var ws = new WebSocket("ws://127.0.0.1:8181/");
+    var ws = new WebSocket("ws://107.22.132.180:8877/");
     this.setSocketConn(ws);
     $log.log("Web Socket connection has been established successfully");
     ws.onopen = function (event) {
       //ws.send('{"action":"subscribe","symbol":"uwti"}');
+      //{"action":"subscribe","equityid":0}
       for(var i in msgArr){
         ws.send(msgArr[i]);
       }
@@ -268,6 +270,12 @@ services.factory('localStorageService', function () {
     update: function LocalStorageServiceUpdate(key, value) {
       if (value) {
         localStorage.setItem(key, angular.toJson(value));
+      }
+    },
+
+    updateSecuritisObj: function updateSecuirtisObj(key, value){
+      if (value){
+        localStorageService.set
       }
     },
     // This will remove a key from localstorage
