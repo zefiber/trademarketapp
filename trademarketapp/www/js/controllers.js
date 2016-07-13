@@ -252,10 +252,12 @@ angular.module('tradeapp.controllers', [])
     //localStorageService.clear('quotes');
 
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
+    var securitisObj = localStorageService.get('securitisObj');
 
     $scope.connectSocket = function () {
       //var sendMsg = '{"action":"subscribe","symbol":"uwti"}';
       var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
+      var sendStockIds = localStorageService.generateStockIdMsgArr('subscribe', $scope.ids);
       $log.log("send message:" + sendMsg);
       socketService.loadRealTimeQuotes(sendMsg).then(function success(data) {
         $log.log("receive resolve data:" + data);
@@ -480,16 +482,16 @@ angular.module('tradeapp.controllers', [])
     $scope.pageName = pageNameService.getPageName();
     $log.log(pageNameService.getPageName());
 
-    $scope.addNewStock = function(symbol){
-      var symbols = [];
-      if(localStorageService.get('quotes')){
-        symbols = localStorageService.get('quotes');
+    $scope.addNewStock = function(stockItem){
+      var stockItems = [];
+      if(localStorageService.get('stockObjs')){
+        stockItems = localStorageService.get('stockObjs');
       }
-      if(symbol && !symbols.includes(symbol)){
-        symbols.push(symbol);
+      if(stockItem && !stockItems.includes(stockItem)){
+        stockItems.push(stockItem);
       }
 
-      localStorageService.update('quotes', symbols);
+      localStorageService.update('stockObjs', stockItems);
 
       $location.path("/customizeWatchList");
     }
