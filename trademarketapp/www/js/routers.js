@@ -102,7 +102,8 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
     .state('detailWatchlist', {
       url: '/detailWatchList',
       templateUrl: 'templates/detail-watchlist.html',
-      controller: 'detailWatchListCtrl'
+      controller: 'detailWatchListCtrl',
+      cache:false
     })
 
 
@@ -122,7 +123,7 @@ tradeapp.config(function ($stateProvider, $urlRouterProvider) {
       url: '/customizeWatchList',
       templateUrl: 'templates/customize-watchlist.html',
       // controller: 'customizeWatchListCtrl',
-      cache: true
+      cache: false
     })
 
     .state('editListWatchList', {

@@ -25,10 +25,10 @@
     <ion-list show-reorder="true" show-delete="true">
 
       <!-- Repeat over each quote, to display the current details and name -->
-      <ion-item ng-repeat="symbol in symbols">
+      <ion-item ng-repeat="stock in stockList">
         <ion-delete-button class="ion-minus-circled"
-                           ng-click="onItemDelete($index)"></ion-delete-button>
-        <div style="display:inline-block;width:33%" class="col-offset-10">{{symbol}}</div>
+                           ng-click="onItemDelete({{stock.ss_id}})"></ion-delete-button>
+        <div style="display:inline-block;width:33%" class="col-offset-10">{{stock.symbol}}</div>
         <div style="display:inline-block;width:33%"></div>
         <div style="display:inline-block;width:33%" ></div>
 

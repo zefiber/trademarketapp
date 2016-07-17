@@ -183,20 +183,21 @@ services.factory('socketService', function ($rootScope, $log, $q) {
     // var ws = new WebSocket("ws://127.0.0.1:8181/");
     var ws = new WebSocket("ws://107.22.132.180:8877/");
     this.setSocketConn(ws);
-    $log.log("Web Socket connection has been established successfully");
+
     ws.onopen = function (event) {
+      $log.log("Web Socket connection has been established successfully");
       //ws.send('{"action":"subscribe","symbol":"uwti"}');
       //{"action":"subscribe","equityid":0}
-      for(var i in msgArr){
-        ws.send(msgArr[i]);
-      }
+      // for(var i in msgArr){
+      //   ws.send(msgArr[i]);
+      // }
+      ws.send(msgArr);
     };
 
     ws.onmessage = function (event) {
       //[{"symbol": "uwti","ask": 66.92539153943089,"bid": 10.900888923043798,"bidsize": 347,"asksize": 354}]
       $log.log("received a message", event.data);
       var stockObjArr = JSON.parse(event.data);
-      stockObjArr.getAttribute(sym)
       d.notify(stockObjArr);
       // d.resolve(stockObjArr);
     };
@@ -272,12 +273,6 @@ services.factory('localStorageService', function () {
         localStorage.setItem(key, angular.toJson(value));
       }
     },
-
-    updateSecuritisObj: function updateSecuirtisObj(key, value){
-      if (value){
-        localStorageService.set
-      }
-    },
     // This will remove a key from localstorage
     clear: function LocalStorageServiceClear(key) {
       localStorage.removeItem(key);
@@ -297,12 +292,22 @@ services.factory('localStorageService', function () {
       var retArr = [];
       var msgObj = {};
 
-      for (var i in ids) {
-        msgObj = {action:action, equityid:ids[i]};
-        retArr.push(angular.toJson(msgObj));
-      }
+      msgObj = {action:action, equitylist:ids};
+      retArr.push(angular.toJson(msgObj));
 
       return retArr;
+    },
+
+    getSymbolById: function getSymbolById(id){
+      var stockObjs = LocalStorageServiceGet('stockObjs');
+      if(!stockObjs){
+        return;
+      }
+      angular.forEach(stockObjs, function(stock){
+        if(stock && stock.ss_id === id){
+          return stock.symbol;
+        }
+      });
     }
 
   };

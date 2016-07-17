@@ -17,13 +17,15 @@
     <h2 class="title">
       <div class="row">
         <div class="col">Symbol</div>
-        <div class="col">Ask</div>
+        <div class="col">Bid Size</div>
         <div class="col">Bid</div>
+        <div class="col">Ask</div>
+        <div class="col">Ask Size</div>
       </div>
     </h2>
   </div>
 
-  <ion-content overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="listWatchListCtrl">
+  <ion-content scrollbar-y="false" overflow-scroll="true" class="ionic-scroll has-header has-subheader has-tabs" ng-controller="listWatchListCtrl">
 
     <!-- two buttons for debugging socket connection-->
     <!--<div class="row">
@@ -39,16 +41,20 @@
     -->
     <ion-list>
       <!-- Repeat over each quote, to display the current details and name -->
-      <ion-item ng-repeat="stock in quotes">
+      <ion-item ng-repeat="stock in stockList">
 
-        <div style="display:inline-block;width:33%" class="col-offset-10">{{stock.symbol}}</div>
-        <div style="display:inline-block;width:33%">{{stock.ask | currency:'$'}}</div>
-        <div style="display:inline-block;width:33%">{{stock.bid | currency: '$'}}</div>
+        <div class="row">
+          <div class="col">{{stock.symbol}}</div>
+          <div class="col">{{stock.bidsize}}</div>
+          <div class="col">{{stock.bid | currency: '$'}}</div>
+          <div class="col">{{stock.ask | currency:'$'}}</div>
+          <div class="col">{{stock.asksize}}</div>
+        </div>
       </ion-item>
     </ion-list>
 
     <br>
-    <div ng-show="!quotes.length" class="col-offset-33 no-results">
+    <div ng-show="!stockList.length" class="col-offset-33 no-results">
       <p>No Stocks Subscribed</p>
     </div>
   </ion-content>

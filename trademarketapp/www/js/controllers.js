@@ -292,33 +292,57 @@ angular.module('tradeapp.controllers', [])
 
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
 
+    var stockObjs = localStorageService.get('stockObjs');
+    var idList = [];
+    angular.forEach(stockObjs, function(stock){
+      idList.push(stock.ss_id);
+    });
+    $scope.ids = idList;
+
     $scope.connectSocket = function () {
       //var sendMsg = '{"action":"subscribe","symbol":"uwti"}';
-      var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
-      $log.log("send message:" + sendMsg);
-      socketService.loadRealTimeQuotes(sendMsg).then(function success(data) {
+      // var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
+      var sendStockIds = localStorageService.generateStockIdMsgArr('subscribe', $scope.ids);
+      $log.log("send message:" + sendStockIds);
+      socketService.loadRealTimeQuotes(sendStockIds).then(function success(data) {
         $log.log("receive resolve data:" + data);
       }, function error(data) {
         $log.log("error data:" + data);
       }, function notify(data) {
         $log.log("notifid data:" + data);
-        $scope.quotes = data;
+        // $scope.quotes = data;
+        if(!stockObjs){
+          return;
+        }
+
+        angular.forEach(stockObjs, function(stockObj){
+          if(stockObj.ss_id === data.equityid){
+            switch (data.action){
+              case "bid":
+                    stockObj.bid = data.bid;
+                    break;
+              case "bidsize":
+                    stockObj.bidsize = data.bidsize;
+                    break;
+              case "ask":
+                    stockObj.ask = data.ask;
+                    break;
+              case "asksize":
+                    stockObj.asksize = data.asksize;
+            }
+
+          }
+
+          $scope.stockList = stockObjs;
+
+        });
+
       });
     }
 
     $scope.disConnectSocket = function () {
       var ws = socketService.getSocketConn();
       ws.close();
-    }
-
-    // Function to update the symbols in localstorage
-    function updateSymbols() {
-      var symbols = [];
-      angular.forEach($scope.quotes, function (stock) {
-        symbols.push(stock.Symbol);
-      });
-      $scope.symbols = symbols;
-      localStorageService.update('quotes', symbols);
     }
 
     // start to connect to the socket to retrieve real time data when come to the page
@@ -366,14 +390,19 @@ angular.module('tradeapp.controllers', [])
     //localStorageService.clear('quotes');
 
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
-    var securitisObj = localStorageService.get('securitisObj');
+    var stockObjs = localStorageService.get('stockObjs');
+    var idList = [];
+    angular.forEach(stockObjs, function(stock){
+      idList.push(stock.ss_id);
+    });
+    $scope.ids = idList;
 
     $scope.connectSocket = function () {
-      //var sendMsg = '{"action":"subscribe","symbol":"uwti"}';
-      var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
+      //var sendMsg = '{"action":"subscribe","equityid":"1"}';
+      // var sendMsg = localStorageService.generateMsgArr('subscribe', $scope.symbols);
       var sendStockIds = localStorageService.generateStockIdMsgArr('subscribe', $scope.ids);
-      $log.log("send message:" + sendMsg);
-      socketService.loadRealTimeQuotes(sendMsg).then(function success(data) {
+      $log.log("send message:" + sendStockIds);
+      socketService.loadRealTimeQuotes(sendStockIds).then(function success(data) {
         $log.log("receive resolve data:" + data);
       }, function error(data) {
         $log.log("error data:" + data);
@@ -386,16 +415,6 @@ angular.module('tradeapp.controllers', [])
     $scope.disConnectSocket = function () {
       var ws = socketService.getSocketConn();
       ws.close();
-    }
-
-    // Function to update the symbols in localstorage
-    function updateSymbols() {
-      var symbols = [];
-      angular.forEach($scope.quotes, function (stock) {
-        symbols.push(stock.Symbol);
-      });
-      $scope.symbols = symbols;
-      localStorageService.update('quotes', symbols);
     }
 
     // start to connect to the socket to retrieve real time data when come to the page
@@ -532,6 +551,18 @@ angular.module('tradeapp.controllers', [])
 
     $scope.symbols = localStorageService.get('quotes', ['YHOO', 'AAPL', 'GOOG', 'MSFT', 'FB', 'TWTR']);
 
+    $scope.stockList = localStorageService.get('stockObjs');
+
+    function updateStockList() {
+      var stockList = [];
+      angular.forEach($scope.stockList, function(stock){
+        stockList.push(stock);
+      });
+      $scope.stockList = stockList;
+      localStorageService.update('stockObjs', stockList);
+    }
+
+
     // Function to update the symbols in localstorage
     function updateSymbols() {
       var symbols = [];
@@ -543,21 +574,29 @@ angular.module('tradeapp.controllers', [])
     }
 
     // Method to handle reordering of items in the list
-    $scope.reorder = function (symbol, $fromIndex, $toIndex) {
-      $scope.symbols.splice($fromIndex, 1);
-      $scope.symbols.splice($toIndex, 0, symbol);
-      updateSymbols();
+    $scope.reorder = function (stock, $fromIndex, $toIndex) {
+      $scope.stockList.splice($fromIndex, 1);
+      $scope.stockList.splice($toIndex, 0, stock);
+      updateStockList();
+
     };
 
-    $scope.onItemDelete = function ($index) {
-      $scope.symbols.splice($index, 1);
-      updateSymbols();
+    $scope.onItemDelete = function (id) {
+      var index = 0;
+      for(var i = 0; i < $scope.stockList.length; i++){
+        if($scope.stockList[i].ss_id === id){
+          break;
+        }
+        index++;
+      }
+
+
+      $scope.stockList.splice(index, 1);
+      updateStockList();
     }
 
 
     $scope.editDone = function ($index) {
-      // $location.path("/listWatchList");
-      // $status.go("listWatchlist");
       $ionicHistory.goBack();
     }
 
@@ -612,20 +651,29 @@ angular.module('tradeapp.controllers', [])
     pageNameService.setPageName("searchNewStock");
     $scope.pageName = pageNameService.getPageName();
     $log.log(pageNameService.getPageName());
-    
+
     $scope.addNewStock = function(stockItem){
+      // localStorageService.clear('stockObjs');
       var stockItems = [];
       if(localStorageService.get('stockObjs')){
         stockItems = localStorageService.get('stockObjs');
       }
-      if(stockItem && !stockItems.includes(stockItem)){
+
+      var existItem = false;
+      angular.forEach(stockItems, function(iterItem){
+        if(stockItem && iterItem.ss_id === stockItem.ss_id){
+          existItem = true;
+        }
+      });
+
+      if(stockItem && !existItem){
         stockItems.push(stockItem);
       }
 
       localStorageService.update('stockObjs', stockItems);
 
-      // $location.path("/customizeWatchList");
-      $state.go("customizeWatchList");
+       $location.path("/customizeWatchList");
+      // $state.go("customizeWatchList");
     }
 
 
