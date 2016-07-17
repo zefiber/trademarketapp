@@ -142,9 +142,18 @@ angular.module('tradeapp.controllers', [])
 
     localStorageService.update('watchlists', $scope.watchlists);
 
-    $scope.onItemDelete = function ($index) {
-      $scope.watchlists.splice($index - 1, 1);
-      localStorageService.update('watchlists',$scope.watchlists);
+    $scope.onItemDelete = function (id) {
+      var watchlistArr = localStorageService.get('watchlists');
+      for(var i = 0; i < watchlistArr.length; i++){
+        if(watchlistArr[i].id == id){
+          watchlistArr.splice(i, 1);
+          break;
+        }
+      }
+
+      localStorageService.update('watchlists',watchlistArr);
+      $scope.watchlists = watchlistArr;
+
     }
 
     $scope.goDetailWatchList = function () {
@@ -180,21 +189,26 @@ angular.module('tradeapp.controllers', [])
     }
 
     function updateWatchList(watchListObj, watchListId){
+      var isUpdate = false;
       for (var i = 0; i < watchlists.length; i++) {
-        if (watchlists[i].id === watchListId) {
+        if (watchlists[i].id == watchListId) {
           watchlists[i].name = watchListObj.name;
           watchlists[i].desc = watchListObj.desc;
           localStorageService.update('watchlists',watchlists);
-          return;
+          isUpdate = true;
+          break;
         }
       }
 
-      var newWatchListObj = {
-        id: watchListId,
-        name: watchListObj.name,
-        desc: watchListObj.desc
+      if(!isUpdate){
+        var newWatchListObj = {
+          id: watchListId,
+          name: watchListObj.name,
+          desc: watchListObj.desc
+        }
+        watchlists.push(newWatchListObj);
       }
-      watchlists.push(newWatchListObj);
+
       localStorageService.update('watchlists',watchlists);
     }
 
@@ -236,7 +250,14 @@ angular.module('tradeapp.controllers', [])
     $scope.saveEditWatchList = function(){
 
       if($state.params.isNew === 'addNew'){
-        var newId = watchlists[watchlists.length - 1].id ++ ;
+        var maxId = 0;
+        for(var i = 0; i < watchlists.length; i++){
+          if(watchlists[i].id > maxId){
+            maxId = watchlists[i].id;
+          }
+        }
+        var newId = ++maxId;
+        // var newId = watchlists[watchlists.length - 1].id ++ ;
         // var newWatchListObj = {
         //   id: newId,
         //   name: $scope.watchlist.name,
